@@ -18,11 +18,13 @@ function avoidRateLimitation() {
   return new Promise(resolve => setTimeout(resolve, 1500));
 }
 
-async function getAlbums(spotifyApi: any): Promise<IAlbum[]> {
+async function getAlbums(
+  spotifyApi: any,
+  playlistID?: string
+): Promise<IAlbum[]> {
   const response = await spotifyApi.request(
-    `https://api.spotify.com/v1/playlists/${
-      process.env.SPOTIFY_PLAYLIST_ID
-    }?limit=500`
+    `https://api.spotify.com/v1/playlists/${playlistID ||
+      process.env.SPOTIFY_PLAYLIST_ID}?limit=500`
   );
 
   const albums: IAlbum[] = response.tracks.items.map((item: any) => ({
@@ -73,8 +75,8 @@ async function searchSwamp(searchText: string) {
   return albums;
 }
 
-async function findAlbums() {
-  const albums = await getAlbums(spotify);
+export async function findAlbums(playlistID?: string): Promise<IResult[]> {
+  const albums = await getAlbums(spotify, playlistID);
   const foundResults: IResult[] = [];
 
   for (const album of albums) {
@@ -91,18 +93,14 @@ async function findAlbums() {
       );
 
       if (alreadyFound) {
-        continue;
+        break;
       }
 
       foundResults.push(result);
-
-      console.log(result.name);
-      console.log(result.link);
-      console.log();
     }
 
     await avoidRateLimitation();
   }
-}
 
-findAlbums();
+  return foundResults;
+}
