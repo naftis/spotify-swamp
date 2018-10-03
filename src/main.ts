@@ -7,6 +7,8 @@ import * as qs from 'qs';
 
 dotenv.config();
 
+process.on('unhandledRejection', r => console.log(r));
+
 const spotify = new Spotify({
   id: process.env.SPOTIFY_API_ID,
   secret: process.env.SPOTIFY_API_SECRET,
