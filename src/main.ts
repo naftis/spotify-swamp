@@ -4,9 +4,9 @@ import { uniqBy } from 'lodash';
 import fetch from 'node-fetch';
 import * as Spotify from 'node-spotify-api';
 import * as qs from 'qs';
+import { IAlbum, IResult } from '../types';
 
 dotenv.config();
-
 process.on('unhandledRejection', r => console.log(r));
 
 const spotify = new Spotify({
@@ -16,11 +16,6 @@ const spotify = new Spotify({
 
 function avoidRateLimitation() {
   return new Promise(resolve => setTimeout(resolve, 1500));
-}
-
-interface IAlbum {
-  artist: string;
-  name: string;
 }
 
 async function getAlbums(spotifyApi: any): Promise<IAlbum[]> {
@@ -37,11 +32,6 @@ async function getAlbums(spotifyApi: any): Promise<IAlbum[]> {
 
   const uniqueAlbums = uniqBy(albums, album => JSON.stringify(album));
   return uniqueAlbums;
-}
-
-interface IResult {
-  link: string;
-  name: string;
 }
 
 async function searchSwamp(searchText: string) {
@@ -85,7 +75,6 @@ async function searchSwamp(searchText: string) {
 
 async function findAlbums() {
   const albums = await getAlbums(spotify);
-
   const foundResults: IResult[] = [];
 
   for (const album of albums) {
